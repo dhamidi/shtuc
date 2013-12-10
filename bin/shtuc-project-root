@@ -1,0 +1,7 @@
+#!/bin/sh
+shtuc_project_root() {
+    SHTUC_PROJECT_ROOT=$(git rev-parse --toplevel 2>/dev/null)
+    [ -n "$SHTUC_PROJECT_ROOT" ] && "$SHTUC_PROJECT_ROOT"
+}
+
+[ "$0" = "sh" ] || shtuc_project_root
