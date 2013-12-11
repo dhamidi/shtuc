@@ -1,0 +1,20 @@
+#!/bin/sh
+shtuc_get() {
+    [ "$#" -lt 1 ] && return 1
+
+    (
+        SHTUC_FILE="$(shtuc-find "$1")"
+        if [ -x "$SHTUC_FILE" ]; then
+            shift
+            "$SHTUC_FILE" "$@"
+        elif [ -r "$SHTUC_FILE" ]; then
+            cat "$SHTUC_FILE"
+        elif (shtuc-find .shtuc/unknown >/dev/null); then
+            shtuc_get .shtuc/unknown
+        else
+            exit 66 # EX_NOINPUT
+        fi
+    )
+}
+
+[ "$0" = "sh" ] || shtuc_get "$@"
