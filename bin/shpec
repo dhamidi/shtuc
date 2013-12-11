@@ -64,6 +64,10 @@ shpec_var() {
     fi
 }
 
+shpec_unset_var() {
+    eval "unset SHPEC_${1}_${SHPEC_LEVEL}"
+}
+
 shpec_set_var() {
     eval "SHPEC_${1}_${SHPEC_LEVEL}=$2"
 }
@@ -77,11 +81,11 @@ shpec_get_var() {
     (
         RESULT="$(shpec_get_var_1)"
         while [ -z "$RESULT" ]; do
-            if [ "$SHPEC_LEVEL" -lt 0 ]; then break; fi
+            if [ "$SHPEC_LEVEL" -le 0 ]; then break; fi
             SHPEC_LEVEL=$((SHPEC_LEVEL - 1))
             RESULT="$(shpec_get_var_1)"
         done
-        printf "%s\n" "$RESULT"
+        [ -n "$RESULT" ] && printf "%s" "$RESULT"
     )
 }
 
@@ -110,41 +114,69 @@ it() {
     shpec_var IT_LABEL "'$1'"
 }
 
+it_end() {
+    shpec_unset_var IT_LABEL
+}
+
 info() {
     case "$1" in
         failure)
             color red "$(shpec_var IT_LABEL)"
+            (
+                FAILURE_MESSAGE="$(var FAILURE_MESSAGE)"
+                [ -n "$FAILURE_MESSAGE" ] && printf "%s\n" "$FAILURE_MESSAGE"
+            )
             ;;
         success)
             color green "$(shpec_var IT_LABEL)"
             ;;
     esac | shpec_indent
-    printf "\n"
+    [ -n "$(shpec_var IT_LABEL)" ] && printf "\n"
 }
-
-
 
 expect() {
     if ! expr "$1" $3 "$4" >/dev/null ; then
-        info failure
         shpec_push_block expect_failure
-        {
+        SHPEC_TMP_BUFFER=$({
             printf "Comparison failed (using %s):\n" "$3"
             printf "Expected:\n"
             printf " %s\n" "$4"
             printf "Got:\n"
             printf " %s\n" "$1"
-        } | shpec_indent >&2
+        } | shpec_indent)
         shpec_pop_block
+
+        shpec_var FAILURE_MESSAGE "$SPEC_TMP_BUFFER"
+
+        return 1
     else
-        info success
+        return 0
     fi
 }
 
 end() {
+    RETVAL=$?
+    if [ "$RETVAL" = "0" ]; then
+        info success
+    else
+        info failure
+    fi
+
+    eval "$(shpec_current_block)_end"
+
     shpec_pop_block
+
+    return $RETVAL
 }
 
 var() {
     shpec_var "$@"
 }
+
+shpec_main() {
+    for shpecfile in "$1"/*-shpec.sh; do
+        . "$shpecfile" || color red "FAIL $shpecfile"
+    done
+}
+
+[ "$0" = "sh" ] || shpec_main "$@"

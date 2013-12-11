@@ -7,6 +7,7 @@ shtuc_path() {
     ) 2>/dev/null
     [ -n "$XDG_CONFIG_HOME" ] && echo "$XDG_CONFIG_HOME/shtuc"
     echo "$HOME/.shtuc.d"
+    echo "/usr/local/etc/shtuc.d"
     echo "/etc/shtuc.d"
 }
 
