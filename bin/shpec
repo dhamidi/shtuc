@@ -5,6 +5,7 @@ set -a
 SHPEC_LEVEL=0
 SHPEC_CURRENT_BLOCK=''
 SHPEC_INDENT_STRING=' '
+SHPEC_EXIT_CODE=0
 
 color_green() {
     printf "32\n"
@@ -38,6 +39,11 @@ color() {
     printf "\033[%s;1m%s\033[0m" $(color_$1) "$2"
 }
 
+shpec_quote() {
+    printf "%s\n" "$1" |
+    sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
+}
+
 shpec_blocks() {
     printf "%s\n" "$SHPEC_CURRENT_BLOCK" | tr : "\n"
 }
@@ -69,7 +75,7 @@ shpec_unset_var() {
 }
 
 shpec_set_var() {
-    eval "SHPEC_${1}_${SHPEC_LEVEL}=$2"
+    eval "SHPEC_${1}_${SHPEC_LEVEL}=""$(shpec_quote "$2")"
 }
 
 shpec_get_var_1() {
@@ -105,13 +111,13 @@ shpec_indent() {
 
 describe() {
     shpec_push_block describe
-    shpec_var DESCRIPTION "'$1'"
+    shpec_var DESCRIPTION "$1"
     printf "%s\n" "$1" | shpec_indent
 }
 
 it() {
     shpec_push_block it
-    shpec_var IT_LABEL "'$1'"
+    shpec_var IT_LABEL "$1"
 }
 
 it_end() {
@@ -123,8 +129,8 @@ info() {
         failure)
             color red "$(shpec_var IT_LABEL)"
             (
-                FAILURE_MESSAGE="$(var FAILURE_MESSAGE)"
-                [ -n "$FAILURE_MESSAGE" ] && printf "%s\n" "$FAILURE_MESSAGE"
+                FAILURE_MESSAGE="$(shpec_var FAILURE_MESSAGE)"
+                [ -n "$FAILURE_MESSAGE" ] && printf "\n%s" "$FAILURE_MESSAGE"
             )
             ;;
         success)
@@ -136,7 +142,6 @@ info() {
 
 expect() {
     if ! expr "$1" $3 "$4" >/dev/null ; then
-        shpec_push_block expect_failure
         SHPEC_TMP_BUFFER=$({
             printf "Comparison failed (using %s):\n" "$3"
             printf "Expected:\n"
@@ -144,9 +149,7 @@ expect() {
             printf "Got:\n"
             printf " %s\n" "$1"
         } | shpec_indent)
-        shpec_pop_block
-
-        shpec_var FAILURE_MESSAGE "$SPEC_TMP_BUFFER"
+        shpec_var FAILURE_MESSAGE "$SHPEC_TMP_BUFFER"
 
         return 1
     else
@@ -175,8 +178,13 @@ var() {
 
 shpec_main() {
     for shpecfile in "$1"/*-shpec.sh; do
-        . "$shpecfile" || color red "FAIL $shpecfile"
+        . "$shpecfile" || {
+            SHPEC_EXIT_CODE=1
+            printf "FAIL %s\n" "$shpecfile"
+        } >&2
     done
+
+    exit $SHPEC_EXIT_CODE
 }
 
 [ "$0" = "sh" ] || shpec_main "$@"

@@ -1,5 +1,5 @@
 #!/bin/sh
-describe 'shtuc-path-shpec'
+describe 'shtuc-path'
   it 'outputs the current directory'
     shtuc-path | grep $HOME >/dev/null
   end
