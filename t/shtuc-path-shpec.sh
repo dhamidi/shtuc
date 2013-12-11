@@ -17,7 +17,7 @@ describe 'shtuc-path'
     end
   end
 
-  it "outputs the user'\''s home directory"
+  it "outputs the user's home directory"
     shtuc-path | grep $HOME >/dev/null
   end
 
