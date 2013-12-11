@@ -37,6 +37,7 @@ color_cyan() {
 
 color() {
     printf "\033[%s;1m%s\033[0m" $(color_$1) "$2"
+
 }
 
 shpec_quote() {
@@ -75,7 +76,7 @@ shpec_unset_var() {
 }
 
 shpec_set_var() {
-    eval "SHPEC_${1}_${SHPEC_LEVEL}=""$(shpec_quote "$2")"
+    eval "SHPEC_${1}_${SHPEC_LEVEL}="$(shpec_quote "$2")
 }
 
 shpec_get_var_1() {
@@ -115,6 +116,10 @@ describe() {
     printf "%s\n" "$1" | shpec_indent
 }
 
+describe_end() {
+    shpec_unset_var DESCRIPTION
+}
+
 it() {
     shpec_push_block it
     shpec_var IT_LABEL "$1"
@@ -125,6 +130,7 @@ it_end() {
 }
 
 info() {
+    [ -z "$(shpec_var IT_LABEL)" ] && return 0
     case "$1" in
         failure)
             color red "$(shpec_var IT_LABEL)"
@@ -137,7 +143,7 @@ info() {
             color green "$(shpec_var IT_LABEL)"
             ;;
     esac | shpec_indent
-    [ -n "$(shpec_var IT_LABEL)" ] && printf "\n"
+    printf "\n"
 }
 
 expect() {
@@ -177,6 +183,11 @@ var() {
 }
 
 shpec_main() {
+    if [ "$1" = "-f" ]; then
+        . "$2"
+        exit
+    fi
+
     for shpecfile in "$1"/*-shpec.sh; do
         . "$shpecfile" || {
             SHPEC_EXIT_CODE=1
