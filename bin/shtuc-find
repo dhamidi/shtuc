@@ -1,0 +1,14 @@
+#!/bin/sh
+shtuc_find() {
+    RESULT=$(shtuc-path | while read path; do
+        if [ -e "$path/$1" ]; then
+            printf "%s/%s\n" "$path" "$1"
+        fi
+    done)
+
+    [ -z "$RESULT" ] && return 1
+
+    printf "%s\n" "$RESULT"
+}
+
+[ "$0" = "sh" ] || shtuc_find "$@"
