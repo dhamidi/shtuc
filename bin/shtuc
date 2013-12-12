@@ -4,7 +4,10 @@ shtuc() {
         shtuc-get "$1"
     elif [ "$#" -ge 2 ]; then
         (
-            SHTUC_DIR="$(shtuc-path | head -n 1)/$(dirname $1)"
+            SHTUC_DIR="$(shtuc-path | head -n 1)"
+            if [ "$(dirname $1)" != "." ]; then
+                SHTUC_DIR="$SHTUC_DIR/$(dirname $1)"
+            fi
             SHTUC_FILE="$SHTUC_DIR/$(basename $1)"
             SHTUC_VALUE="$2"
             SHTUC_MAKE_EXECUTABLE=''
@@ -19,6 +22,7 @@ shtuc() {
 
             mkdir -p "$SHTUC_DIR"
             printf "%s\n" "$SHTUC_VALUE" >"$SHTUC_FILE"
+            printf "%s\n" "$SHTUC_FILE"
 
             if [ -n "$SHTUC_MAKE_EXECUTABLE" ]; then
                 chmod +x "$SHTUC_FILE"
