@@ -1,0 +1,32 @@
+#!/bin/sh
+shtuc() {
+    if [ "$#" = 1 ]; then
+        shtuc-get "$1"
+    elif [ "$#" -ge 2 ]; then
+        (
+            SHTUC_DIR="$(shtuc-path | head -n 1)/$(dirname $1)"
+            SHTUC_FILE="$SHTUC_DIR/$(basename $1)"
+            SHTUC_VALUE="$2"
+            SHTUC_MAKE_EXECUTABLE=''
+            if [ "$#" = 3 ]; then
+                if [ "$2" = run ]; then
+                    SHTUC_VALUE="$3"
+                    SHTUC_MAKE_EXECUTABLE=yes
+                else
+                    exit 64 # EX_USAGE
+                fi
+            fi
+
+            mkdir -p "$SHTUC_DIR"
+            printf "%s\n" "$SHTUC_VALUE" >"$SHTUC_FILE"
+
+            if [ -n "$SHTUC_MAKE_EXECUTABLE" ]; then
+                chmod +x "$SHTUC_FILE"
+            else
+                chmod -x "$SHTUC_FILE"
+            fi
+        )
+    fi
+}
+
+[ "$0" = "sh" ] || shtuc "$@"
