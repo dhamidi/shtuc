@@ -1,0 +1,89 @@
+.\" Copyright (C), 2013  Dario Hamidi
+.\" You may distribute this file under the terms of the GNU Free
+.\" Documentation License.
+.TH shtuc 1 2013-12-12
+.SH NAME
+shtuc \- stupid configuration manager
+.SH SYNOPSIS
+.SY shtuc
+<key>
+.YS
+.SY shtuc
+<key>
+<value>
+.YS
+.SY shtuc
+<key>
+run
+<value>
+.YS
+.SH DESCRIPTION
+\fBshtuc\fR provides an interface for querying configuration variables
+in a uniform manner.  Each configuration variable is stored as a single
+file relative to one of the directories listed by \fBshtuc-path\fR(1).
+.PP
+If invoked in the first form, the value of the configuration variable
+\fI<key>\fR is printed on stdout.
+.PP
+In the second form, the configuration variable \fI<key>\fR is set to
+\fI<value>\fR.  The variable is stored relative to the directory
+identified by the first line of output of \fBshtuc-path\fR(1).  The name
+of the file is written to stdout.
+.PP
+The third form behaves like the second form, except that executable
+permissions are added to the file written.
+.SH EXTENDED DESCRIPTION
+\fBshtuc\fR manages configuration variables using files. Its purpose is
+to provide a single, universal interface for accessing configuration
+variables.
+.PP
+Software configuration is usually stored in some kind of hierarchical
+data structure, encoded as plain text file. Various encodings exist
+and are used for this (e.g. `ini' files, `yaml', `json'). Working
+with any of these files requires decoding the text file back into a
+hierarchical data structure which the processing program understands.
+The programming libraries for this vary in their semantics, robustness
+and availability for different programming languages.
+.PP
+The type of data that can be encoded is also limited, depending on the
+encoding. Some encodings (or implementations of such) support
+substituting environment variables, including files, or other means of
+aggregating data from other sources.
+.PP
+The filesystem already provides a hierarchical data store and requires
+no special tools beyond read/write access to files. Executable files
+allow for dynamic query/generation of values.
+.SS Storage
+Configuration variables are stored as flat files.  Each file represents
+a single configuration variable.  The name of a configuration variable
+is used as a relative file path when searching for configuration
+variables.
+.SS Querying
+Querying the value of configuration variables using \fBshtuc\fR(1)
+involves several utilities:
+
+.EX
+ shtuc-project-root > shtuc-path > shtuc-find > shtuc-get
+.EE
+
+Most importantly, \fBshtuc-find\fR(1) is responsible for locating a file
+containing the value of a configuration variable.  The resulting file is
+then processed by \fBshtuc-get\fR(1).  If the file is executable, is
+executed and the text produced on stdout is the value of queried
+variable.  Otherwise the content of the file is written to stdout.
+.PP
+If \fBshtuc-find\fR(1) fails to locate a file for the queried variable,
+\fBshtuc-get\fR(1) tries to retrieve the value of the special variable
+\fI.shtuc/unknown\fR instead, using the same algorithm.
+.SH OPTIONS
+None.
+.SH FILES
+Configuration variables should be files in any of the directories listed
+by \fBshtuc-path\fR(1).
+.SH "SEE ALSO"
+\fBshtuc-path\fR(1), \fBshtuc-project-root\fR(1), \fBshtuc-find\fR(1)
+.SH BUGS
+\fBshtuc\fR should be conforming to POSIX.1-2008.  Please report any
+behavior that conflicts with that standard.
+.SH AUTHOR
+Dario Hamidi <dario.hamidi@gmail.com>
