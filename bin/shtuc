@@ -3,33 +3,14 @@ shtuc() {
     if [ "$#" = 1 ]; then
         shtuc-get "$1"
     elif [ "$#" -ge 2 ]; then
-        (
-            SHTUC_DIR="$(shtuc-path | head -n 1)"
-            if [ "$(dirname $1)" != "." ]; then
-                SHTUC_DIR="$SHTUC_DIR/$(dirname $1)"
-            fi
-            SHTUC_FILE="$SHTUC_DIR/$(basename $1)"
-            SHTUC_VALUE="$2"
-            SHTUC_MAKE_EXECUTABLE=''
-            if [ "$#" = 3 ]; then
-                if [ "$2" = run ]; then
-                    SHTUC_VALUE="$3"
-                    SHTUC_MAKE_EXECUTABLE=yes
-                else
-                    exit 64 # EX_USAGE
-                fi
-            fi
-
-            mkdir -p "$SHTUC_DIR"
-            printf "%s\n" "$SHTUC_VALUE" >"$SHTUC_FILE"
-            printf "%s\n" "$SHTUC_FILE"
-
-            if [ -n "$SHTUC_MAKE_EXECUTABLE" ]; then
-                chmod +x "$SHTUC_FILE"
+        if [ "$#" -ge 3 ]; then
+            if [ "$2" = run ]; then
+                set -- -x "$1" "$3"
             else
-                chmod -x "$SHTUC_FILE"
+                exit 64 # EX_USAGE
             fi
-        )
+        fi
+        shtuc-set "$@"
     fi
 }
 

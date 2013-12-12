@@ -1,0 +1,33 @@
+#!/bin/sh
+shtuc_set() {
+    (
+        case "$1" in
+            -x|--executable)
+                SHTUC_MAKE_EXECUTABLE=yes
+                shift
+                ;;
+            *)
+                SHTUC_MAKE_EXECUTABLE=''
+                ;;
+        esac
+
+        SHTUC_DIR=$(shtuc-path | head -n 1)
+        if [ "$(dirname $1)" != "." ]; then
+            SHTUC_DIR="$SHTUC_DIR/$(dirname $1)"
+        fi
+        SHTUC_FILE="$SHTUC_DIR/$(basename $1)"
+        SHTUC_VALUE="$2"
+
+        mkdir -p "$SHTUC_DIR"
+        printf "%s\n" "$SHTUC_VALUE" >"$SHTUC_FILE"
+        SHTUC_WRITE_STATUS=$?
+        printf "%s\n" "$SHTUC_FILE"
+        [ "$SHTUC_WRITE_STATUS" = 0 ] || return 74 # EX_IOERR
+
+        if [ -n "$SHTUC_MAKE_EXECUTABLE" ]; then
+            chmod +x "$SHTUC_FILE"
+        fi
+    )
+}
+
+[ "$0" = "sh" ] || shtuc_set "$@"
