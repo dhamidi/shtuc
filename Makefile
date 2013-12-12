@@ -13,7 +13,9 @@ install: install-bin install-man
 
 install-bin:
 	chmod -R +x bin
+	mkdir -p ${BINPREFIX}
 	cp -r -v bin/* ${BINPREFIX}/
 
 install-man:
+	mkdir -p ${MANPREFIX}
 	cp -r -v man/* ${MANPREFIX}/
