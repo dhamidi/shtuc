@@ -1,14 +1,16 @@
 #!/bin/sh
 shtuc_path() {
-    echo "$PWD/.shtuc.d"
-    (
-        PROJECT_ROOT=$(shtuc-project-root)
-        [ -n "$PROJECT_ROOT" ] && echo "$PROJECT_ROOT"
-    ) 2>/dev/null
-    [ -n "$XDG_CONFIG_HOME" ] && echo "$XDG_CONFIG_HOME/shtuc"
-    echo "$HOME/.shtuc.d"
-    echo "/usr/local/etc/shtuc.d"
-    echo "/etc/shtuc.d"
+    {
+        echo "$PWD/.shtuc.d"
+        (
+            PROJECT_ROOT=$(shtuc-project-root)
+            [ -n "$PROJECT_ROOT" ] && echo "$PROJECT_ROOT"
+        ) 2>/dev/null
+        [ -n "$XDG_CONFIG_HOME" ] && echo "$XDG_CONFIG_HOME/shtuc"
+        echo "$HOME/.shtuc.d"
+        echo "/usr/local/etc/shtuc.d"
+        echo "/etc/shtuc.d"
+    } | uniq
 }
 
 [ "$0" = "sh" ] || shtuc_path
