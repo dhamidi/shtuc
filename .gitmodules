@@ -1,0 +1,3 @@
+[submodule "shpec"]
+	path = shpec
+	url = https://github.com/dhamidi/shpec.git

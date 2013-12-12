@@ -7,7 +7,7 @@ BINPREFIX?=${PREFIX}/bin
 test:
 	@PATH=$$PWD/bin:$$PATH \
 	SHTUC_TEST_DIR=$$PWD \
-	bin/shpec t
+	shpec/bin/shpec t
 
 install: install-bin install-man
 
