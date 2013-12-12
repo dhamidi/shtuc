@@ -2,7 +2,7 @@
 shtuc_project_root() {
     (
         PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-        [ -n "$PROJECT_ROOT" ] && echo "$PROJECT_ROOT"
+        [ -n "$PROJECT_ROOT" ] && echo "$PROJECT_ROOT/.shtuc.d"
     )
 }
 

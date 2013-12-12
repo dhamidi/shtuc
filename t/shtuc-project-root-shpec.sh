@@ -2,7 +2,11 @@
 describe "shtuc-project-root"
   describe 'when in a git repository'
     it 'outputs the top level git dir'
-      expect "$(shtuc-project-root)" to = "$(git rev-parse --show-toplevel)"
+      expect "$(shtuc-project-root)" to = "$(git rev-parse --show-toplevel)/.shtuc.d"
+    end
+
+    it 'ends with ".shtuc.d"'
+      expect "$(shtuc-project-root)" to : '.*\.shtuc.d$'
     end
   end
 
