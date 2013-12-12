@@ -24,19 +24,19 @@ describe 'shtuc-get'
     end
   end
 
-  describe 'the requested file does not exist'
-    var key shtuc-get-__failure__
-    var dir "${SHTUC_TEST_DIR:-$PWD}/.shtuc.d/.shtuc"
+  (describe 'the requested file does not exist'
+    key=shtuc-get-__failure__
+    dir="${SHTUC_TEST_DIR:-$PWD}/.shtuc.d/.shtuc"
 
     # see /usr/include/sysexits.h for definition of EX_NOINPUT
     it 'exits with EX_NOINPUT'
-      expect "$(shtuc-get $(var key); echo $?)" to = 66
+      expect "$(shtuc-get $key; echo $?)" to = 66
     end
 
-    it 'uses .shtuc/unknown if available'
-      echo unknown > "$(var dir)/unknown"
-      trap "rm $(var dir)/unknown" 0
-      expect "$(shtuc-get $(var key))" to = unknown
-    end
-  end
+    (it 'uses .shtuc/unknown if available'
+      echo unknown > "$dir/unknown"
+      trap "rm $dir/unknown" EXIT
+      expect "$(shtuc-get $key)" to = unknown
+     end)
+  end)
 end
