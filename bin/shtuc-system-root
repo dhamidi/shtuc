@@ -1,0 +1,7 @@
+#!/bin/sh
+shtuc_system_root() {
+    echo /usr/local/etc/shtuc.d
+    echo /etc/shtuc.d
+}
+
+[ "$0" = "sh" ] || shtuc_system_root "$@"
