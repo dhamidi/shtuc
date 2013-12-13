@@ -36,6 +36,6 @@ describe 'shtuc-set'
 
     it 'outputs the path to the file'
       expect "$dir_loc" to : '.*/foo$'
-    end)
-  end
+    end
+  end)
 end
