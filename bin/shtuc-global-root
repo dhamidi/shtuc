@@ -1,0 +1,10 @@
+#!/bin/sh
+shtuc_global_root() {
+    if [ -z "$XDG_CONFIG_HOME" ]; then
+        printf "%s\n" "$HOME/.shtuc.d"
+    else
+        printf "%s\n" "$XDG_CONFIG_HOME/shtuc"
+    fi
+}
+
+[ "$0" = "sh" ] || shtuc_global_root "$@"
