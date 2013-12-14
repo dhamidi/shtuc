@@ -1,10 +1,13 @@
 #!/bin/sh
 shtuc_path() {
-    {
+    if [ -n "$SHTUC_SCOPES" ]; then
+      printf "%s\n" "$SHTUC_SCOPES" | tr ':' "\n" |
+      xargs -L 1 shtuc-root
+    else
       shtuc-local-root
       shtuc-global-root
       shtuc-system-root
-    } | uniq
+    fi | uniq
 }
 
 [ "$0" = "sh" ] || shtuc_path

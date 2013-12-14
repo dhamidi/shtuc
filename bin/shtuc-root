@@ -1,0 +1,16 @@
+#!/bin/sh
+shtuc_root() {
+    (
+        SUBCOMMAND=${1:-local}
+        case $SUBCOMMAND in
+            local|global|system)
+                shtuc-$SUBCOMMAND-root
+                ;;
+            *)
+                return 64 # EX_USAGE
+                ;;
+        esac
+    )
+}
+
+[ "$0" = "sh" ] || shtuc_root "$@"
