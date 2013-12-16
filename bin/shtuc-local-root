@@ -2,7 +2,7 @@
 shtuc_local_root() {
     (
         SHTUC_PROJECT_ROOT=$(shtuc-project-root)
-        printf "%s\n" "${SHTUC_PROJECT_ROOT:-${PWD}.shtuc.d}"
+        printf "%s\n" "${SHTUC_PROJECT_ROOT:-${PWD}/.shtuc.d}"
     )
 }
 
