@@ -1,5 +1,35 @@
 #!/bin/sh
 shtuc() {
+    SHTUC_SCOPES=''
+
+    export SHTUC_SCOPES
+
+    while expr "$1" : "\(--\|-\)[^ ]\+" >/dev/null
+    do
+        case $1 in
+            --global|-global|-g|--g)
+                SHTUC_SCOPES=global${SHTUC_SCOPES:+:}${SHTUC_SCOPES}
+                shift
+                ;;
+            --local|-local|-l|--l)
+                SHTUC_SCOPES=local${SHTUC_SCOPES:+:}${SHTUC_SCOPES}
+                shift
+                ;;
+            --system|-system|-s|--s)
+                SHTUC_SCOPES=system${SHTUC_SCOPES:+:}${SHTUC_SCOPES}
+                shift
+                ;;
+            --help|-help|-h|--h)
+                man shtuc
+                exit $?
+                ;;
+            *)
+                printf "$0: unknown option: '%s'\n" "$1" >&2
+                shift
+                ;;
+        esac
+    done
+
     if [ "$#" = 1 ]; then
         shtuc-get "$1"
     elif [ "$#" -ge 2 ]; then
