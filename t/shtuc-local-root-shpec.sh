@@ -9,9 +9,9 @@ describe 'shtuc-local-root'
 
   describe 'not in a project'
     (it 'outputs the current directory'
-      working_directory=/
+      working_directory=/tmp
       cd $working_directory
-      expect "$(shtuc-local-root)" to = "${working_directory}.shtuc.d"
+      expect "$(shtuc-local-root)" to = "${working_directory}/.shtuc.d"
      end)
   end
 end
