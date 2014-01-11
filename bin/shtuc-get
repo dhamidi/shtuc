@@ -10,6 +10,8 @@ shtuc_get() {
         elif [ -r "$SHTUC_FILE" ]; then
             cat "$SHTUC_FILE"
         elif (shtuc-find .shtuc/unknown >/dev/null); then
+            SHTUC_KEY="$1"
+            export SHTUC_KEY
             shtuc_get .shtuc/unknown
         else
             exit 66 # EX_NOINPUT

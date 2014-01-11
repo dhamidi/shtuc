@@ -33,10 +33,19 @@ describe 'shtuc-get'
       expect "$(shtuc-get $key; echo $?)" to = 66
     end
 
-    (it 'uses .shtuc/unknown if available'
-      echo unknown > "$dir/unknown"
-      trap "rm $dir/unknown" EXIT
-      expect "$(shtuc-get $key)" to = unknown
-     end)
+    describe '.shtuc/unknown'
+      (it 'uses .shtuc/unknown if available'
+        echo unknown > "$dir/unknown"
+        trap "rm $dir/unknown" EXIT
+        expect "$(shtuc-get $key)" to = unknown
+       end)
+
+      (it 'sets SHTUC_KEY'
+        echo 'printf "%s\n" "$SHTUC_KEY"' > "$dir/unknown"
+        chmod +x "$dir/unknown"
+        trap "rm $dir/unknown" EXIT
+        expect "$(shtuc-get $key)" to = "$key"
+       end)
+    end
   end)
 end
